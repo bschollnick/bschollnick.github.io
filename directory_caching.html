@@ -1,0 +1,691 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Directory Caching &mdash; Directory Caching 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Directory Caching 1.0.0 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to Directory Caching’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Directory Caching’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Directory Caching 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="directory-caching">
+<h1>Directory Caching<a class="headerlink" href="#directory-caching" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-directory_caching"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Module:</th><td class="field-body"><p class="first">Directory Caching</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Date:</th><td class="field-body"><p class="first">2015-02-17</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Platforms:</th><td class="field-body"><p class="first">Mac, Windows, Unix (Tested under Mac OS X)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body"><p class="first">1</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first simple">
+<li>Benjamin Schollnick</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Description:</th><td class="field-body"><p class="first last">Used to cache and speed up Directory listings.  The Gallery project
+uses it to cache all file and directory information.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Modules Used (Batteries Included)</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>os</li>
+<li>os.path</li>
+<li>stat</li>
+<li>string</li>
+<li>time</li>
+</ul>
+</div></blockquote>
+<p><strong>Required 3rd Party Modules</strong>:</p>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt>Scandir - <a class="reference external" href="https://github.com/benhoyt/scandir">https://github.com/benhoyt/scandir</a></dt>
+<dd><ul class="first last simple">
+<li>scandir is a module which provides a generator version of            os.listdir() that also exposes the extra file information the            operating system returns when you iterate a directory.            Generally 2-3 (or more) times faster than the standard library.            (It&#8217;s quite noticeable!)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>natsort - <a class="reference external" href="https://github.com/xolox/python-naturalsort">https://github.com/xolox/python-naturalsort</a></dt>
+<dd><ul class="first last simple">
+<li>Used for natural sorting when returning alpha results</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Concept:</th><td class="field-body"><p class="first">The Directory Caching module was the first step in speeding up processing of
+<strong>massive</strong> directories (2K - 4K) files for the gallery.</p>
+<p>The first speed up was derived from using Scandir.  The second speed up was
+due to caching the results, and monitoring for changes.</p>
+<p>The library uses two methods to expire the cache:</p>
+<ol class="last arabic simple">
+<li>The library will check for the Modified Times on the Directories.
+If the directory&#8217;s Last Modified time is newer than the last_scanned_time
+then the directory will be rescanned.</li>
+<li>If the Directory and/or File count in the directory is different from
+the last time the directory was scanned, it will be rescanned.</li>
+</ol>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note</strong>:</p>
+<ul>
+<li><p class="first">The second method (#2) of expiration does cause a small amount of
+performance penalty, since it has to rescan the directory, but I have
+tried to reduce the penalty as much as possible.</p>
+</li>
+<li><p class="first">The library does not normalize the pathnames, I have decided to leave
+data normalization to the application layer.  The Gallery passes
+scan_directory strings as .lower().strip() to normalize the data.</p>
+</li>
+<li><dl class="first docutils">
+<dt>File Extensions are normalized, as lowercase strings.</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>There are two different file extensions variables.</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">file_extension</span></code> is the text only (lower case) file extension
+(e.g. doc)</li>
+<li><code class="docutils literal"><span class="pre">dot_extension</span></code> is the file extension with the separator
+(e.g. .doc)</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>There are two different filenames variables</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">filename</span></code> contains only the filename of the file
+(e.g. <strong>spam_spam.doc</strong>)</li>
+<li><code class="docutils literal"><span class="pre">fq_filename</span></code> contains the fully qualified filename of the file     (e.g. <strong>/Users/Shared/tasty/spam_spam.doc</strong>)</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>code:</p>
+<div class="highlight-python"><div class="highlight"><pre>cdl = directory_caching.Cache()
+if not cdl.directory_in_cache(&quot;/Users/Testuser&quot;)
+    cdl.smart_read(&quot;/Users/Testuser&quot;)
+
+if not cdl.directory_in_cache(&quot;/Volumes/Gallery/Albums&quot;)
+    cdl.smart_read(&quot;/Volumes/Gallery/Albums&quot;)
+
+cached_dirs, cached_files = cdl.return_sorted(
+                scan_directory=&quot;/Volumes/Gallery/Albums&quot;,
+                sort_by=SORT_BY_NAME, reverse=False)
+
+if cdl.directory_changed(scan_directory=&quot;/Users/Testuser&quot;):
+    cdl.smart_read(&quot;/Users/Testuser&quot;)
+
+if cdl.directory_changed(scan_directory=&quot;/Volumes/Gallery/Albums&quot;):
+    cdl.smart_read(&quot;/Volumes/Gallery/Albums&quot;)
+</pre></div>
+</div>
+<p><strong>Note</strong>:</p>
+<blockquote>
+<div><p>smart_read, will check to see if the directory has changed.  So the
+example above is not optimized.</p>
+<blockquote>
+<div><p>code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">cdl</span><span class="o">.</span><span class="n">directory_changed</span><span class="p">(</span><span class="n">scan_directory</span><span class="o">=</span><span class="s">&quot;/Volumes/Gallery/Albums&quot;</span><span class="p">):</span>
+    <span class="n">cdl</span><span class="o">.</span><span class="n">smart_read</span><span class="p">(</span><span class="s">&quot;/Volumes/Gallery/Albums&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Can be rewritten simply as:</p>
+<blockquote>
+<div><p>code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cdl</span><span class="o">.</span><span class="n">smart_read</span><span class="p">(</span><span class="s">&quot;/Volumes/Gallery/Albums&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<dl class="class">
+<dt id="directory_caching.Cache">
+<em class="property">class </em><code class="descclassname">directory_caching.</code><code class="descname">Cache</code><a class="reference internal" href="_modules/directory_caching.html#Cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the mainstay of the Directory Caching engine.</p>
+<p>Establishes the Baseline Settings for the Cache.</p>
+<ul>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">files_to_ignore</span></code> = [&#8216;.ds_store&#8217;, &#8216;.htaccess&#8217;]</dt>
+<dd><ul class="first last simple">
+<li>Contains a list of filenames that are to be ignored, and not
+added to cache if they are in a folder.</li>
+<li>By default .ds_store, and .htaccess files are ignored.</li>
+<li>These items must be lowercased.  Internally all filenames are
+normalized to lowercase.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">acceptable_extensions</span></code> = [] # See Note #1</dt>
+<dd><ul class="first last simple">
+<li>If this is set, this becomes a &#8220;reverse&#8221; filter. Only files
+that contain a file extension that is in this list, will be
+&#8220;detected&#8221; and cached.</li>
+<li>An empty list [], indicates <strong>all</strong> files should be accepted.</li>
+<li>By default, all files are allowed / accepted.</li>
+<li>As above, these extensions need to be normalized in lowercase.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>Note:</strong></p>
+<ol class="arabic simple">
+<li>These are <code class="docutils literal"><span class="pre">file</span> <span class="pre">extensions</span></code> (e.g. doc), not dot_extensions
+(e.g. .doc)</li>
+</ol>
+<dl class="method">
+<dt id="directory_caching.Cache.clean_filenames">
+<code class="descname">clean_filenames</code><span class="sig-paren">(</span><em>fqpathname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directory_caching.html#Cache.clean_filenames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.clean_filenames" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fqpathname</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The full qualified pathname to examine</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+<p>Check to see if any filenames in the <code class="docutils literal"><span class="pre">fqpathname</span></code> location need
+to be scrubbed / cleaned.</p>
+<p>This function uses the <code class="docutils literal"><span class="pre">filter_filenames</span></code> variable/pointer to
+check and scrub the filenames.</p>
+<p>If self.filter_filenames is set, this function will call
+self.filter_filenames to test against the file and directory names.</p>
+<p>This feature was added for the gallery, to automate the renaming
+of the directories and files, to ensure that the files and directory
+names are acceptable to the web server and web browser.</p>
+<p>By setting a <code class="docutils literal"><span class="pre">filter_filenames</span></code> function, you can use this as you
+choose.</p>
+<p>By default, this is not turned on.  This is an opt-in feature.</p>
+<p>code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">file_types</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cdl</span> <span class="o">=</span> <span class="n">directory_caching</span><span class="o">.</span><span class="n">Cache</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cdl</span><span class="o">.</span><span class="n">files_to_ignore</span> <span class="o">=</span> <span class="n">file_types</span><span class="o">.</span><span class="n">files_to_ignore</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cdl</span><span class="o">.</span><span class="n">acceptable_extensions</span> <span class="o">=</span> <span class="n">file_types</span><span class="o">.</span><span class="n">image_safe_files</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cdl</span><span class="o">.</span><span class="n">filter_filenames</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">clean_filename2</span>
+<span class="k">print</span> <span class="s">&quot;Priming the cache for </span><span class="si">%s</span><span class="s">, please wait&quot;</span> <span class="o">%</span>            <span class="n">file_types</span><span class="o">.</span><span class="n">locations</span><span class="p">[</span><span class="s">&quot;albums_root&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cdl</span><span class="o">.</span><span class="n">smart_read</span><span class="p">(</span>
+    <span class="n">file_types</span><span class="o">.</span><span class="n">locations</span><span class="p">[</span><span class="s">&quot;albums_root&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+<span class="k">print</span> <span class="s">&quot;Pump primed.&quot;</span>
+</pre></div>
+</div>
+<p>After assigning self.cdl.filter_filenames, every time a directory is
+examined by the caching engine, it will rename the files and directories
+if an invalid filename or directory name is found.</p>
+<p>This check is simply a comparison, the filename is passed to the cleaning
+function, and if the returned filename is different, the file is renamed
+to the new name.</p>
+<p>code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">orig_name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fq_filename</span> <span class="o">!=</span> <span class="n">new_name</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">orig_name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fq_filename</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>An example cleaning function, from the Gallery application.</p>
+<p>code:</p>
+<div class="highlight-python"><div class="highlight"><pre>def clean_filename2(filename):
+replacements = {&#39;&quot;&#39;:&quot;`&quot;, &quot;&#39;&quot;:&quot;`&quot;,
+                &quot;,&quot;:&quot;&quot;, &quot;#&quot;:&quot;&quot;,
+                &quot;*&quot;:&quot;&quot;, &quot;@&quot;:&quot;&quot;,
+                &quot;:&quot;:&quot;-&quot;, &quot;|&quot;:&quot;&quot;}
+filename = replace_all(urllib2.unquote(filename), replacements)
+    # Un&quot;quotify&quot; the URL / Filename
+filename = unidecode.unidecode(filename)
+    # de-unicode the filename / url
+filename, fileext = os.path.splitext(filename)
+filename = filename.strip() + fileext.strip()
+    # remove extra spaces from filename and file extension.
+    # e.g.  &quot;this is the filename .txt&quot; -&gt; &quot;this is the filename.txt&quot;
+return filename
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="directory_caching.Cache.directory_changed">
+<code class="descname">directory_changed</code><span class="sig-paren">(</span><em>scan_directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directory_caching.html#Cache.directory_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.directory_changed" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scan_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The fully qualified pathname to examine</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+<p>Return Values</p>
+<ul class="simple">
+<li>True - The directory has changed since being added to the cache</li>
+<li>False - The directory has <strong>not</strong> changed since being added to the cache</li>
+</ul>
+<p>Pass the target directory as scan_directory.</p>
+<p>There is two checks being made to decide on the validity of the cache.</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Check the last modified time on the directory vs the</dt>
+<dd><p class="first last"><strong>last_scanned_time</strong> in the cached data.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Check the number of files and directories in the cached copy for any
+differences.</p>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="directory_caching.Cache.directory_in_cache">
+<code class="descname">directory_in_cache</code><span class="sig-paren">(</span><em>scan_directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directory_caching.html#Cache.directory_in_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.directory_in_cache" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scan_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The path of the file to wrap</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+<p>Return Values</p>
+<ul class="simple">
+<li>True - Directory is in the cache</li>
+<li>False - Directory is not in the cache</li>
+</ul>
+<p>This simply returns a boolean, indicating if the scan_directory is
+present in the cache.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="directory_caching.Cache.return_current_directory_offset">
+<code class="descname">return_current_directory_offset</code><span class="sig-paren">(</span><em>scan_directory</em>, <em>current_directory</em>, <em>offset=0</em>, <em>sort_type=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directory_caching.html#Cache.return_current_directory_offset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.return_current_directory_offset" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>scan_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The fully qualified pathname to examine</li>
+<li><strong>current_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The current directory name</li>
+<li><strong>offset</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The offset modifier</li>
+<li><strong>sort_type</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Which sort to apply to the listings</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Returns, list containing:</dt>
+<dd><p class="first">(Integer, string)</p>
+<p class="last">Integer: The newly calculated offset
+String: The Directory name of the new offset</p>
+</dd>
+</dl>
+<p>return the offset of the next or previous directory, in     scan_directory, where current_directory is the current_directory    that you are residing in from the scan_directory.</p>
+<p>e.g. /Users/Benjamin is the scan_directory, you are in Movies.  So
+current_directory is Movies.</p>
+<p>Used for calculating the previous / next directory in the gallery.</p>
+<dl class="docutils">
+<dt>offset value examples</dt>
+<dd><ul class="first last simple">
+<li>0 - return current directories offset</li>
+<li>-1 - return the previous directory</li>
+<li>+1 - return the next directory in the list</li>
+</ul>
+</dd>
+</dl>
+<p>Code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cdl</span> <span class="o">=</span> <span class="n">d_caching</span><span class="o">.</span><span class="n">Cache</span><span class="p">()</span>
+<span class="n">cdl</span><span class="o">.</span><span class="n">smart_read</span><span class="p">(</span> <span class="s">&quot;/Users/Benjamin&quot;</span> <span class="p">)</span>
+<span class="n">dirs</span> <span class="o">=</span> <span class="n">cdl</span><span class="o">.</span><span class="n">return_sort_name</span><span class="p">(</span><span class="n">scan_directory</span><span class="o">=</span><span class="s">&quot;/Users/Benjamin&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">dirs</span><span class="p">[</span><span class="n">cdl</span><span class="o">.</span><span class="n">return_current_directory_offset</span><span class="p">(</span>
+             <span class="n">scan_directory</span> <span class="o">=</span> <span class="s">&quot;/Users/Benjamin&quot;</span><span class="p">,</span>
+             <span class="n">current_directory</span><span class="o">=</span><span class="s">&quot;Movies&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
+<span class="k">print</span> <span class="n">dirs</span><span class="p">[</span><span class="n">cdl</span><span class="o">.</span><span class="n">return_current_directory_offset</span><span class="p">(</span>
+             <span class="n">scan_directory</span> <span class="o">=</span> <span class="s">&quot;/Users/Benjamin&quot;</span><span class="p">,</span>
+             <span class="n">current_directory</span><span class="o">=</span><span class="s">&quot;Movies&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
+<span class="k">print</span> <span class="n">dirs</span><span class="p">[</span><span class="n">cdl</span><span class="o">.</span><span class="n">return_current_directory_offset</span><span class="p">(</span>
+             <span class="n">scan_directory</span> <span class="o">=</span> <span class="s">&quot;/Users/Benjamin&quot;</span><span class="p">,</span>
+             <span class="n">current_directory</span><span class="o">=</span><span class="s">&quot;Movies&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=-</span><span class="mi">2</span><span class="p">)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="directory_caching.Cache.return_sort_ctime">
+<code class="descname">return_sort_ctime</code><span class="sig-paren">(</span><em>scan_directory</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directory_caching.html#Cache.return_sort_ctime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.return_sort_ctime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Here for backward compatibility versus earlier versions of the library.
+This will eventually be removed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>scan_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The fully qualified pathname to examine</li>
+<li><strong>reverse</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Is this an ascending or descending (<strong>reverse</strong>) sort</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Same as return_sorted.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="directory_caching.Cache.return_sort_lmod">
+<code class="descname">return_sort_lmod</code><span class="sig-paren">(</span><em>scan_directory</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directory_caching.html#Cache.return_sort_lmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.return_sort_lmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Here for backward compatibility versus earlier versions of the library.
+This will eventually be removed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>scan_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The fully qualified pathname to examine</li>
+<li><strong>reverse</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Is this an ascending or descending (<strong>reverse</strong>) sort</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Same as return_sorted.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="directory_caching.Cache.return_sort_name">
+<code class="descname">return_sort_name</code><span class="sig-paren">(</span><em>scan_directory</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directory_caching.html#Cache.return_sort_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.return_sort_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Here for backward compatibility versus earlier versions of the library.
+This will eventually be removed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>scan_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The fully qualified pathname to examine</li>
+<li><strong>reverse</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Is this an ascending or descending (<strong>reverse</strong>) sort</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Same as return_sorted.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="directory_caching.Cache.return_sorted">
+<code class="descname">return_sorted</code><span class="sig-paren">(</span><em>scan_directory</em>, <em>sort_by=0</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directory_caching.html#Cache.return_sorted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.return_sorted" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>scan_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The fully qualified pathname to examine</li>
+<li><strong>sort_by</strong> (<em>integer / constant</em>) &#8211; SORT_BY_NAME        = 0
+SORT_BY_MODIFIED    = 1
+SORT_BY_CREATION    = 2</li>
+<li><strong>reverse</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Is this an ascending or descending (<strong>reverse</strong>) sort</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of sorted Cache entries (text, scandir DirEntry)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tupple</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Return sorted list(s) from the Directory Cache for the
+Scanned directory, sorted by name.</p>
+<p>Returns 2 tuples of date, T[0] - Files, and T[1] - Directories
+which contain the data from the cached directory.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="directory_caching.Cache.smart_read">
+<code class="descname">smart_read</code><span class="sig-paren">(</span><em>scan_directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directory_caching.html#Cache.smart_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.smart_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scan_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The fully qualified pathname to examine</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+<p>This is a wrapper around the Read and changed functions.</p>
+<p>The scan_directory is passed in, converted to a normalized form,
+and then checked to see if it exists in the cache.</p>
+<p>If it doesn&#8217;t exist (or is expired), then it is read.</p>
+<p>If it already exists <em>AND</em> has not expired, it is not
+updated.</p>
+<p>Net affect, this will ensure the directory is in cache, and
+update to date.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="directory_caching.DirEntry">
+<em class="property">class </em><code class="descclassname">directory_caching.</code><code class="descname">DirEntry</code><a class="reference internal" href="_modules/directory_caching.html#DirEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.DirEntry" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The path of the file to wrap</li>
+<li><strong>field_storage</strong> (<em>FileStorage</em>) &#8211; The <code class="xref py py-class docutils literal"><span class="pre">FileStorage</span></code> instance to wrap</li>
+<li><strong>temporary</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Whether or not to delete the file when the File
+instance is destructed</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A buffered writable file descriptor</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">BufferedFileStorage</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The is the template class for the cache objects.
+Used to store data regarding the files or subdirectories.</p>
+<ul>
+<li><p class="first">Directory Only Data</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">number_files</span></code> - It contains the number of files,             in the directory.</li>
+<li><code class="docutils literal"><span class="pre">number_dirs</span></code> - It contains the number of subdirectories            in the directory.</li>
+<li><code class="docutils literal"><span class="pre">directoryname</span></code> - Contains the directory name (not pathname)</li>
+<li><code class="docutils literal"><span class="pre">filename</span></code> - is blank, the directory equivalent is             directoryname.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><dl class="first docutils">
+<dt>Common Data</dt>
+<dd><ul class="first last">
+<li><p class="first"><code class="docutils literal"><span class="pre">file_extension</span></code> - Contains the file extension of the file            for a directory, &#8220;dir&#8221; is placed in the file extension.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">dot_extension</span></code> - See <code class="docutils literal"><span class="pre">file_extension</span></code>.  This has the             &#8221;.&#8221; prefix.  Otherwise identical to <code class="docutils literal"><span class="pre">file_extension</span></code>.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">fq_filename</span></code> - For files, <code class="docutils literal"><span class="pre">fq_filename</span></code> will be the            absolute path to the file.  For directories, fq_filename            will also point to the absolute path to the directory.</p>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">human_st_mtime</span></code> - This is a human readable last modified</dt>
+<dd><ul class="first last simple">
+<li>timetime.asctime(time.localtime(data.st[stat.ST_MTIME]))</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">parentdirectory</span></code> - Contains the absolute pathname of the            parent directory that contains the file/directory.</p>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">st</span></code> - Contains the statistics for the file/directory</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">st_mode</span></code> - FileMode, iNode protection mode</li>
+<li><code class="docutils literal"><span class="pre">st_ino</span></code> - iNode Number</li>
+<li><code class="docutils literal"><span class="pre">st_dev</span></code> - Device iNode resides on</li>
+<li><code class="docutils literal"><span class="pre">st_nlink</span></code> - Number of Links to the iNode</li>
+<li><code class="docutils literal"><span class="pre">st_uid</span></code> - User Id of the Owner</li>
+<li><code class="docutils literal"><span class="pre">st_gid</span></code> - Group id of the owner</li>
+<li><code class="docutils literal"><span class="pre">st_size</span></code> - Size in bytes of file object</li>
+<li><code class="docutils literal"><span class="pre">st_atime</span></code> - Time of last modification</li>
+<li><code class="docutils literal"><span class="pre">st_mtime</span></code> - Last modification time</li>
+<li><code class="docutils literal"><span class="pre">st_ctime</span></code> - creation time, as reported by OS</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>File only data</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">directoryname</span></code> - Will be Blank (it is not a directory)       * <code class="docutils literal"><span class="pre">filename</span></code> - Contains the filename of the file, for             directories this is blank.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Directory Caching&#8217;s documentation!</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/directory_caching.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Directory Caching’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Directory Caching 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Benjamin Schollnick.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.
+    </div>
+  </body>
+</html>
