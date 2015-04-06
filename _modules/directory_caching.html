@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>directory_caching &mdash; Directory Caching 1.0.0 documentation</title>
+    <title>directory_caching &mdash; API Documentation 1.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Directory Caching 1.0.0 documentation" href="../index.html" />
+    <link rel="top" title="API Documentation 1.0.0 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body role="document">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Directory Caching 1.0.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">API Documentation 1.0.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -156,6 +156,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c">#####################################################</span>
 <span class="c">#   Batteries Included imports</span>
+<span class="kn">import</span> <span class="nn">exceptions</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">stat</span>
@@ -170,7 +171,7 @@
 <span class="n">SORT_BY_MODIFIED</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">SORT_BY_CREATION</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="c">#####################################################</span>
-<div class="viewcode-block" id="DirEntry"><a class="viewcode-back" href="../directory_caching.html#directory_caching.DirEntry">[docs]</a><span class="k">class</span> <span class="nc">DirEntry</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="DirEntry"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.DirEntry">[docs]</a><span class="k">class</span> <span class="nc">DirEntry</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        path (str): The path of the file to wrap</span>
@@ -243,7 +244,7 @@
 
 
 <span class="c">#####################################################</span></div>
-<div class="viewcode-block" id="Cache"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache">[docs]</a><span class="k">class</span> <span class="nc">Cache</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Cache"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.Cache">[docs]</a><span class="k">class</span> <span class="nc">Cache</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the mainstay of the Directory Caching engine.</span>
 
@@ -282,101 +283,7 @@
             <span class="c"># This is the path in the OS that is being examined</span>
             <span class="c">#    (e.g. /Volumes/Users/username/)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span> <span class="o">=</span> <span class="p">{}</span>
-
-
 <span class="c">#####################################################</span>
-<div class="viewcode-block" id="Cache.clean_filenames"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache.clean_filenames">[docs]</a>    <span class="k">def</span> <span class="nf">clean_filenames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fqpathname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Args:</span>
-<span class="sd">        fqpathname (str): The full qualified pathname to examine</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
-
-<span class="sd">    Check to see if any filenames in the ``fqpathname`` location need</span>
-<span class="sd">    to be scrubbed / cleaned.</span>
-
-<span class="sd">    This function uses the ``filter_filenames`` variable/pointer to</span>
-<span class="sd">    check and scrub the filenames.</span>
-
-<span class="sd">    If self.filter_filenames is set, this function will call</span>
-<span class="sd">    self.filter_filenames to test against the file and directory names.</span>
-
-<span class="sd">    This feature was added for the gallery, to automate the renaming</span>
-<span class="sd">    of the directories and files, to ensure that the files and directory</span>
-<span class="sd">    names are acceptable to the web server and web browser.</span>
-
-<span class="sd">    By setting a ``filter_filenames`` function, you can use this as you</span>
-<span class="sd">    choose.</span>
-
-<span class="sd">    By default, this is not turned on.  This is an opt-in feature.</span>
-
-<span class="sd">    code::</span>
-
-<span class="sd">        import common</span>
-<span class="sd">        import file_types</span>
-<span class="sd">        self.cdl = directory_caching.Cache()</span>
-<span class="sd">        self.cdl.files_to_ignore = file_types.files_to_ignore</span>
-<span class="sd">        self.cdl.acceptable_extensions = file_types.image_safe_files</span>
-<span class="sd">        self.cdl.filter_filenames = common.clean_filename2</span>
-<span class="sd">        print &quot;Priming the cache for %s, please wait&quot; %\</span>
-<span class="sd">            file_types.locations[&quot;albums_root&quot;].lower().strip()</span>
-<span class="sd">        self.cdl.smart_read(</span>
-<span class="sd">            file_types.locations[&quot;albums_root&quot;].lower().strip())</span>
-<span class="sd">        print &quot;Pump primed.&quot;</span>
-
-<span class="sd">    After assigning self.cdl.filter_filenames, every time a directory is</span>
-<span class="sd">    examined by the caching engine, it will rename the files and directories</span>
-<span class="sd">    if an invalid filename or directory name is found.</span>
-
-<span class="sd">    This check is simply a comparison, the filename is passed to the cleaning</span>
-<span class="sd">    function, and if the returned filename is different, the file is renamed</span>
-<span class="sd">    to the new name.</span>
-
-<span class="sd">    code::</span>
-
-<span class="sd">        if orig_name[1].fq_filename != new_name:</span>
-<span class="sd">            os.rename(orig_name[1].fq_filename, new_name)</span>
-
-<span class="sd">    An example cleaning function, from the Gallery application.</span>
-
-<span class="sd">    code::</span>
-
-<span class="sd">        def clean_filename2(filename):</span>
-<span class="sd">        replacements = {&#39;&quot;&#39;:&quot;`&quot;, &quot;&#39;&quot;:&quot;`&quot;,</span>
-<span class="sd">                        &quot;,&quot;:&quot;&quot;, &quot;#&quot;:&quot;&quot;,</span>
-<span class="sd">                        &quot;*&quot;:&quot;&quot;, &quot;@&quot;:&quot;&quot;,</span>
-<span class="sd">                        &quot;:&quot;:&quot;-&quot;, &quot;|&quot;:&quot;&quot;}</span>
-<span class="sd">        filename = replace_all(urllib2.unquote(filename), replacements)</span>
-<span class="sd">            # Un&quot;quotify&quot; the URL / Filename</span>
-<span class="sd">        filename = unidecode.unidecode(filename)</span>
-<span class="sd">            # de-unicode the filename / url</span>
-<span class="sd">        filename, fileext = os.path.splitext(filename)</span>
-<span class="sd">        filename = filename.strip() + fileext.strip()</span>
-<span class="sd">            # remove extra spaces from filename and file extension.</span>
-<span class="sd">            # e.g.  &quot;this is the filename .txt&quot; -&gt; &quot;this is the filename.txt&quot;</span>
-<span class="sd">        return filename</span>
-
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">modified</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_filenames</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory_in_cache</span><span class="p">(</span><span class="n">fqpathname</span><span class="p">):</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">smart_read</span><span class="p">(</span><span class="n">fqpathname</span><span class="p">)</span>
-
-            <span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">dirs</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_sort_name</span><span class="p">(</span><span class="n">scan_directory</span><span class="o">=</span><span class="n">fqpathname</span><span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">orig_name</span> <span class="ow">in</span> <span class="n">files</span><span class="o">+</span><span class="n">dirs</span><span class="p">:</span>
-                <span class="n">new_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_filenames</span><span class="p">(</span><span class="n">orig_name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fq_filename</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">orig_name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fq_filename</span> <span class="o">!=</span> <span class="n">new_name</span><span class="p">:</span>
-                    <span class="n">modified</span> <span class="o">=</span> <span class="bp">True</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">orig_name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fq_filename</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">modified</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_scan_directory_list</span><span class="p">(</span><span class="n">fqpathname</span><span class="p">)</span>
-
-<span class="c">#####################################################</span></div>
     <span class="k">def</span> <span class="nf">_scan_directory_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
@@ -388,7 +295,7 @@
 <span class="sd">        Scan the directory &quot;scan_directory&quot;, and save it to the</span>
 <span class="sd">        self.d_cache dictionary.</span>
 
-<span class="sd">        Low Level function, intended to be used by the populate function.</span>
+<span class="sd">        **Low Level function, intended to be used by the populate function.**</span>
 
 <span class="sd">        scan_directory is matched absolutely, case sensitive,</span>
 <span class="sd">        string is stripped(), but otherwise left alone.</span>
@@ -401,49 +308,55 @@
 
         <span class="n">norm_dir_name</span> <span class="o">=</span> <span class="n">scan_directory</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">norm_dir_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">norm_dir_name</span><span class="p">][</span><span class="s">&quot;last_sort&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
 
         <span class="k">for</span> <span class="n">s_entry</span> <span class="ow">in</span> <span class="n">scandir</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">):</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">DirEntry</span><span class="p">()</span>
             <span class="n">data</span><span class="o">.</span><span class="n">st</span> <span class="o">=</span> <span class="n">s_entry</span><span class="o">.</span><span class="n">lstat</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_filenames</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-                    <span class="n">data</span><span class="o">.</span><span class="n">fq_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">),</span>
-                        <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">fq_filename</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
-                        <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+                <span class="n">orig_name</span> <span class="o">=</span> <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">clean_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_filenames</span><span class="p">(</span><span class="n">orig_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">orig_name</span> <span class="o">!=</span> <span class="n">clean_name</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s_entry</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">orig_name</span><span class="p">),</span>
+                                  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span>\
+                                               <span class="n">scan_directory</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                                               <span class="n">clean_name</span><span class="p">))</span>
+                    <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">OSError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">clean_name</span> <span class="o">=</span> <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span>
 
             <span class="n">data</span><span class="o">.</span><span class="n">fq_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">scan_directory</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span>
-                <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="n">clean_name</span><span class="p">)</span>
             <span class="n">data</span><span class="o">.</span><span class="n">parentdirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">data</span><span class="o">.</span><span class="n">human_st_mtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">(</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">st</span><span class="p">[</span><span class="n">stat</span><span class="o">.</span><span class="n">ST_MTIME</span><span class="p">]))</span>
-            <span class="k">if</span> <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files_to_ignore</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">clean_name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files_to_ignore</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">s_entry</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">directoryname</span> <span class="o">=</span> <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">directoryname</span> <span class="o">=</span> <span class="n">clean_name</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">dot_extension</span> <span class="o">=</span> <span class="s">&quot;.dir&quot;</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">file_extension</span> <span class="o">=</span> <span class="s">&quot;dir&quot;</span>
 
                 <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_files</span><span class="p">,</span>
                  <span class="n">data</span><span class="o">.</span><span class="n">number_dirs</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_file_dir_count</span><span class="p">(</span>\
                        <span class="n">data</span><span class="o">.</span><span class="n">fq_filename</span><span class="p">)</span>
-                <span class="n">directories</span><span class="p">[</span><span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">data</span>
+                <span class="n">directories</span><span class="p">[</span><span class="n">clean_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">clean_name</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">directoryname</span> <span class="o">=</span> <span class="n">scan_directory</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">dot_extension</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span>\
-                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">clean_name</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">file_extension</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dot_extension</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceptable_extensions</span> <span class="o">==</span> <span class="p">[]:</span>
                     <span class="c">#</span>
                     <span class="c">#   There are no non-acceptable files.</span>
                     <span class="c">#</span>
-                    <span class="n">files</span><span class="p">[</span><span class="n">s_entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">data</span>
+                    <span class="n">files</span><span class="p">[</span><span class="n">clean_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
                 <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">file_extension</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceptable_extensions</span><span class="p">:</span>
                     <span class="c">#</span>
                     <span class="c">#   Filter by extensions</span>
@@ -453,7 +366,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">norm_dir_name</span><span class="p">][</span><span class="s">&quot;dirs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">directories</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">norm_dir_name</span><span class="p">][</span><span class="s">&quot;last_scanned_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">norm_dir_name</span><span class="p">][</span><span class="s">&quot;last_sort&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clean_filenames</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)</span>
         <span class="k">return</span>
 
 <span class="c">#####################################################</span>
@@ -500,7 +412,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">fcount</span><span class="p">,</span> <span class="n">dcount</span><span class="p">)</span>
 
 <span class="c">#####################################################</span>
-<div class="viewcode-block" id="Cache.directory_in_cache"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache.directory_in_cache">[docs]</a>    <span class="k">def</span> <span class="nf">directory_in_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">):</span>
+<div class="viewcode-block" id="Cache.directory_in_cache"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.Cache.directory_in_cache">[docs]</a>    <span class="k">def</span> <span class="nf">directory_in_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            scan_directory (str): The path of the file to wrap</span>
@@ -520,7 +432,7 @@
         <span class="k">return</span> <span class="n">scan_directory</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
 <span class="c">#####################################################</span></div>
-<div class="viewcode-block" id="Cache.return_current_directory_offset"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache.return_current_directory_offset">[docs]</a>    <span class="k">def</span> <span class="nf">return_current_directory_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Cache.return_current_directory_offset"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.Cache.return_current_directory_offset">[docs]</a>    <span class="k">def</span> <span class="nf">return_current_directory_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                         <span class="n">scan_directory</span><span class="p">,</span>
                                         <span class="n">current_directory</span><span class="p">,</span>
                                         <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -617,7 +529,7 @@
 
 
 <span class="c">#####################################################</span></div>
-<div class="viewcode-block" id="Cache.directory_changed"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache.directory_changed">[docs]</a>    <span class="k">def</span> <span class="nf">directory_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">):</span>
+<div class="viewcode-block" id="Cache.directory_changed"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.Cache.directory_changed">[docs]</a>    <span class="k">def</span> <span class="nf">directory_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        scan_directory (str): The fully qualified pathname to examine</span>
@@ -661,7 +573,7 @@
             <span class="k">return</span> <span class="bp">True</span>
 
 <span class="c">#####################################################</span></div>
-<div class="viewcode-block" id="Cache.smart_read"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache.smart_read">[docs]</a>    <span class="k">def</span> <span class="nf">smart_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">):</span>
+<div class="viewcode-block" id="Cache.smart_read"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.Cache.smart_read">[docs]</a>    <span class="k">def</span> <span class="nf">smart_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        scan_directory (str): The fully qualified pathname to examine</span>
@@ -679,15 +591,82 @@
 <span class="sd">    If it already exists *AND* has not expired, it is not</span>
 <span class="sd">    updated.</span>
 
-<span class="sd">    Net affect, this will ensure the directory is in cache, and</span>
-<span class="sd">    update to date.</span>
+<span class="sd">    **Net affect, this will ensure the directory is in cache, and</span>
+<span class="sd">    update to date.**</span>
+
+<span class="sd">    In addition, the clean_filename function has been merged into</span>
+<span class="sd">    _scan_directory.  It will check to see if any filenames in the</span>
+<span class="sd">    ``scan_directory`` location need to be scrubbed / cleaned.</span>
+
+<span class="sd">    This function uses the ``filter_filenames`` variable/pointer to</span>
+<span class="sd">    check and scrub the filenames.</span>
+
+<span class="sd">    If self.filter_filenames is set, this function will call</span>
+<span class="sd">    self.filter_filenames to test against the file and directory names.</span>
+
+<span class="sd">    This feature was added for the gallery, to automate the renaming</span>
+<span class="sd">    of the directories and files, to ensure that the files and directory</span>
+<span class="sd">    names are acceptable to the web server and web browser.</span>
+
+<span class="sd">    By setting a ``filter_filenames`` function, you can use this as you</span>
+<span class="sd">    choose.</span>
+
+<span class="sd">    By default, this is not turned on.  This is an opt-in feature.</span>
+
+<span class="sd">    code::</span>
+
+<span class="sd">        import common</span>
+<span class="sd">        import file_types</span>
+<span class="sd">        self.cdl = directory_caching.Cache()</span>
+<span class="sd">        self.cdl.files_to_ignore = file_types.files_to_ignore</span>
+<span class="sd">        self.cdl.acceptable_extensions = file_types.image_safe_files</span>
+<span class="sd">        self.cdl.filter_filenames = common.clean_filename2</span>
+<span class="sd">        print &quot;Priming the cache for %s, please wait&quot; %\</span>
+<span class="sd">            file_types.locations[&quot;albums_root&quot;].lower().strip()</span>
+<span class="sd">        self.cdl.smart_read(</span>
+<span class="sd">            file_types.locations[&quot;albums_root&quot;].lower().strip())</span>
+<span class="sd">        print &quot;Pump primed.&quot;</span>
+
+<span class="sd">    After assigning self.cdl.filter_filenames, every time a directory is</span>
+<span class="sd">    examined by the caching engine, it will rename the files and directories</span>
+<span class="sd">    if an invalid filename or directory name is found.</span>
+
+<span class="sd">    This check is simply a comparison, the filename is passed to the cleaning</span>
+<span class="sd">    function, and if the returned filename is different, the file is renamed</span>
+<span class="sd">    to the new name.</span>
+
+<span class="sd">    code::</span>
+
+<span class="sd">        if orig_name[1].fq_filename != new_name:</span>
+<span class="sd">            os.rename(orig_name[1].fq_filename, new_name)</span>
+
+<span class="sd">    An example cleaning function, from the Gallery application.</span>
+
+<span class="sd">    code::</span>
+
+<span class="sd">        def clean_filename2(filename):</span>
+<span class="sd">        replacements = {&#39;&quot;&#39;:&quot;`&quot;, &quot;&#39;&quot;:&quot;`&quot;,</span>
+<span class="sd">                        &quot;,&quot;:&quot;&quot;, &quot;#&quot;:&quot;&quot;,</span>
+<span class="sd">                        &quot;*&quot;:&quot;&quot;, &quot;@&quot;:&quot;&quot;,</span>
+<span class="sd">                        &quot;:&quot;:&quot;-&quot;, &quot;|&quot;:&quot;&quot;}</span>
+<span class="sd">        filename = replace_all(urllib2.unquote(filename), replacements)</span>
+<span class="sd">            # Un&quot;quotify&quot; the URL / Filename</span>
+<span class="sd">        filename = unidecode.unidecode(filename)</span>
+<span class="sd">            # de-unicode the filename / url</span>
+<span class="sd">        filename, fileext = os.path.splitext(filename)</span>
+<span class="sd">        filename = filename.strip() + fileext.strip()</span>
+<span class="sd">            # remove extra spaces from filename and file extension.</span>
+<span class="sd">            # e.g.  &quot;this is the filename .txt&quot; -&gt; &quot;this is the filename.txt&quot;</span>
+<span class="sd">        return filename</span>
+
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">scan_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory_changed</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_scan_directory_list</span><span class="p">(</span><span class="n">scan_directory</span><span class="p">)</span>
 
 <span class="c">#####################################################</span></div>
-<div class="viewcode-block" id="Cache.return_sorted"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache.return_sorted">[docs]</a>    <span class="k">def</span> <span class="nf">return_sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Cache.return_sorted"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.Cache.return_sorted">[docs]</a>    <span class="k">def</span> <span class="nf">return_sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        scan_directory (str): The fully qualified pathname to examine</span>
@@ -717,32 +696,31 @@
             <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;files&quot;</span><span class="p">]</span>
             <span class="n">dirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;dirs&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="n">SORT_BY_NAME</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;files&quot;</span><span class="p">]</span> <span class="o">=</span>\
-                    <span class="n">natsort</span><span class="o">.</span><span class="n">natsort</span><span class="p">(</span><span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
-                                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">string</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">filename</span><span class="p">),</span>
-                                    <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;dirs&quot;</span><span class="p">]</span> <span class="o">=</span>\
-                    <span class="n">natsort</span><span class="o">.</span><span class="n">natsort</span><span class="p">(</span><span class="n">dirs</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
-                                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">string</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span>\
-                                        <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">directoryname</span><span class="p">),</span>
-                                    <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="n">natsort</span><span class="o">.</span><span class="n">natsort</span><span class="p">(</span><span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                                        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span>\
+                                            <span class="n">string</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">filename</span><span class="p">),</span>
+                                        <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+                <span class="n">dirs</span> <span class="o">=</span> <span class="n">natsort</span><span class="o">.</span><span class="n">natsort</span><span class="p">(</span><span class="n">dirs</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                                       <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">string</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span>\
+                                            <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">directoryname</span><span class="p">),</span>
+                                       <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="n">SORT_BY_MODIFIED</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;files&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>\
-                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;dirs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">dirs</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>\
-                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>\
+                               <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+                <span class="n">dirs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">dirs</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>\
+                               <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="n">SORT_BY_CREATION</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;files&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>\
-                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">st_ctime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;dirs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">dirs</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>\
-                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">st_ctime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>\
+                               <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">st_ctime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+                <span class="n">dirs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">dirs</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>\
+                               <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">st_ctime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;files&quot;</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;dirs&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;sort_index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">files</span><span class="p">,</span> <span class="n">dirs</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_cache</span><span class="p">[</span><span class="n">scan_directory</span><span class="p">][</span><span class="s">&quot;sort_index&quot;</span><span class="p">]</span>
 
 
 <span class="c">#####################################################</span></div>
-<div class="viewcode-block" id="Cache.return_sort_name"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache.return_sort_name">[docs]</a>    <span class="k">def</span> <span class="nf">return_sort_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Cache.return_sort_name"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.Cache.return_sort_name">[docs]</a>    <span class="k">def</span> <span class="nf">return_sort_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Here for backward compatibility versus earlier versions of the library.</span>
 <span class="sd">    This will eventually be removed.</span>
@@ -759,7 +737,7 @@
                                   <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
 
 <span class="c">#####################################################</span></div>
-<div class="viewcode-block" id="Cache.return_sort_lmod"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache.return_sort_lmod">[docs]</a>    <span class="k">def</span> <span class="nf">return_sort_lmod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Cache.return_sort_lmod"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.Cache.return_sort_lmod">[docs]</a>    <span class="k">def</span> <span class="nf">return_sort_lmod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Here for backward compatibility versus earlier versions of the library.</span>
 <span class="sd">    This will eventually be removed.</span>
@@ -776,7 +754,7 @@
                                   <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
 
 <span class="c">#####################################################</span></div>
-<div class="viewcode-block" id="Cache.return_sort_ctime"><a class="viewcode-back" href="../directory_caching.html#directory_caching.Cache.return_sort_ctime">[docs]</a>    <span class="k">def</span> <span class="nf">return_sort_ctime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Cache.return_sort_ctime"><a class="viewcode-back" href="../dir_caching/directory_caching.html#directory_caching.Cache.return_sort_ctime">[docs]</a>    <span class="k">def</span> <span class="nf">return_sort_ctime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_directory</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Here for backward compatibility versus earlier versions of the library.</span>
 <span class="sd">    This will eventually be removed.</span>
@@ -824,7 +802,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Directory Caching 1.0.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">API Documentation 1.0.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
