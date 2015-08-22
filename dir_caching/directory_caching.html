@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="API Documentation 1.0.0 documentation" href="../index.html" />
     <link rel="up" title="Directory Caching’s documentation!" href="dir_caching_index.html" />
-    <link rel="next" title="Semantic URL" href="../semantic/semantic_url_index.html" />
+    <link rel="next" title="Gallery (aka QuickBBS) documentation!" href="../gallery/gallery_index.html" />
     <link rel="prev" title="Installation" href="dir_caching_install.html" /> 
   </head>
   <body role="document">
@@ -39,7 +39,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../semantic/semantic_url_index.html" title="Semantic URL"
+          <a href="../gallery/gallery_index.html" title="Gallery (aka QuickBBS) documentation!"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="dir_caching_install.html" title="Installation"
@@ -186,7 +186,7 @@ if not cdl.directory_in_cache(&quot;/Users/Testuser&quot;)
 if not cdl.directory_in_cache(&quot;/Volumes/Gallery/Albums&quot;)
     cdl.smart_read(&quot;/Volumes/Gallery/Albums&quot;)
 
-cached_dirs, cached_files = cdl.return_sorted(
+cached_files, cached_dirs = cdl.return_sorted(
                 scan_directory=&quot;/Volumes/Gallery/Albums&quot;,
                 sort_by=SORT_BY_NAME, reverse=False)
 
@@ -244,6 +244,12 @@ that contain a file extension that is in this list, will be
 <li>By default, all files are allowed / accepted.</li>
 <li>As above, these extensions need to be normalized in lowercase.</li>
 </ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>&#8216;&#8217;hidden_dot_files&#8217;&#8216;, boolean value.  If true, any file that starts</dt>
+<dd><p class="first last">with a . will be ignored.  Otherwise, they will be added to the cache.</p>
 </dd>
 </dl>
 </li>
@@ -310,7 +316,7 @@ present in the cache.</p>
 
 <dl class="method">
 <dt id="directory_caching.Cache.return_current_directory_offset">
-<code class="descname">return_current_directory_offset</code><span class="sig-paren">(</span><em>scan_directory</em>, <em>current_directory</em>, <em>offset=0</em>, <em>sort_type=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/directory_caching.html#Cache.return_current_directory_offset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.return_current_directory_offset" title="Permalink to this definition">¶</a></dt>
+<code class="descname">return_current_directory_offset</code><span class="sig-paren">(</span><em>scan_directory</em>, <em>current_directory</em>, <em>offset=0</em>, <em>sort_type=0</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/directory_caching.html#Cache.return_current_directory_offset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directory_caching.Cache.return_current_directory_offset" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -344,22 +350,25 @@ current_directory is Movies.</p>
 <li>+1 - return the next directory in the list</li>
 </ul>
 </dd>
+<dt>Code::</dt>
+<dd><p class="first">import directory_caching
+cdl = directory_caching.Cache()
+cdl.smart_read( &#8220;/Users/Benjamin&#8221; )
+dirs = cdl.return_sort_name(scan_directory=&#8221;/Users/Benjamin&#8221;)[1]
+print dirs[cdl.return_current_directory_offset(</p>
+<blockquote>
+<div>scan_directory = &#8220;/Users/Benjamin&#8221;,
+current_directory=&#8221;Movies&#8221;, offset=0)]</div></blockquote>
+<dl class="last docutils">
+<dt>print dirs[cdl.return_current_directory_offset(</dt>
+<dd>scan_directory = &#8220;/Users/Benjamin&#8221;,
+current_directory=&#8221;Movies&#8221;, offset=2)]</dd>
+<dt>print dirs[cdl.return_current_directory_offset(</dt>
+<dd>scan_directory = &#8220;/Users/Benjamin&#8221;,
+current_directory=&#8221;Movies&#8221;, offset=-2)]</dd>
 </dl>
-<p>Code:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">cdl</span> <span class="o">=</span> <span class="n">d_caching</span><span class="o">.</span><span class="n">Cache</span><span class="p">()</span>
-<span class="n">cdl</span><span class="o">.</span><span class="n">smart_read</span><span class="p">(</span> <span class="s">&quot;/Users/Benjamin&quot;</span> <span class="p">)</span>
-<span class="n">dirs</span> <span class="o">=</span> <span class="n">cdl</span><span class="o">.</span><span class="n">return_sort_name</span><span class="p">(</span><span class="n">scan_directory</span><span class="o">=</span><span class="s">&quot;/Users/Benjamin&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-<span class="k">print</span> <span class="n">dirs</span><span class="p">[</span><span class="n">cdl</span><span class="o">.</span><span class="n">return_current_directory_offset</span><span class="p">(</span>
-             <span class="n">scan_directory</span> <span class="o">=</span> <span class="s">&quot;/Users/Benjamin&quot;</span><span class="p">,</span>
-             <span class="n">current_directory</span><span class="o">=</span><span class="s">&quot;Movies&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
-<span class="k">print</span> <span class="n">dirs</span><span class="p">[</span><span class="n">cdl</span><span class="o">.</span><span class="n">return_current_directory_offset</span><span class="p">(</span>
-             <span class="n">scan_directory</span> <span class="o">=</span> <span class="s">&quot;/Users/Benjamin&quot;</span><span class="p">,</span>
-             <span class="n">current_directory</span><span class="o">=</span><span class="s">&quot;Movies&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
-<span class="k">print</span> <span class="n">dirs</span><span class="p">[</span><span class="n">cdl</span><span class="o">.</span><span class="n">return_current_directory_offset</span><span class="p">(</span>
-             <span class="n">scan_directory</span> <span class="o">=</span> <span class="s">&quot;/Users/Benjamin&quot;</span><span class="p">,</span>
-             <span class="n">current_directory</span><span class="o">=</span><span class="s">&quot;Movies&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=-</span><span class="mi">2</span><span class="p">)]</span>
-</pre></div>
-</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -467,7 +476,8 @@ which contain the data from the cached directory.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scan_directory</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The fully qualified pathname to examine</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True - Path Exists and/or Read was successful
+False - Path does <em>NOT</em> exist</td>
 </tr>
 </tbody>
 </table>
@@ -637,8 +647,8 @@ Used to store data regarding the files or subdirectories.</p>
   <p class="topless"><a href="dir_caching_install.html"
                         title="previous chapter">Installation</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../semantic/semantic_url_index.html"
-                        title="next chapter">Semantic URL</a></p>
+  <p class="topless"><a href="../gallery/gallery_index.html"
+                        title="next chapter">Gallery (aka QuickBBS) documentation!</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -673,7 +683,7 @@ Used to store data regarding the files or subdirectories.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../semantic/semantic_url_index.html" title="Semantic URL"
+          <a href="../gallery/gallery_index.html" title="Gallery (aka QuickBBS) documentation!"
              >next</a> |</li>
         <li class="right" >
           <a href="dir_caching_install.html" title="Installation"
