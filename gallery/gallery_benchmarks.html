@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Benchmarks &mdash; API Documentation 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="API Documentation 1.0.0 documentation" href="../index.html" />
+    <link rel="up" title="Table of Contents" href="gallery_index.html" />
+    <link rel="next" title="Semantic URL" href="../semantic/semantic_url_index.html" />
+    <link rel="prev" title="Gallery Plugin API Documentation!" href="gallery_plugin_api.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../semantic/semantic_url_index.html" title="Semantic URL"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gallery_plugin_api.html" title="Gallery Plugin API Documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">API Documentation 1.0.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="gallery_index.html" accesskey="U">Table of Contents</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="benchmarks">
+<h1>Benchmarks<a class="headerlink" href="#benchmarks" title="Permalink to this headline">¶</a></h1>
+<p>The Gallery package, is quite fast, but optimization is always an option.</p>
+<p>Several factors come into play:</p>
+<ol class="arabic simple">
+<li>The Twistd framework is quite efficient and delivers quite a punch.</li>
+</ol>
+</div>
+<div class="section" id="index-page-benchmarks">
+<h1>Index Page Benchmarks<a class="headerlink" href="#index-page-benchmarks" title="Permalink to this headline">¶</a></h1>
+<p>ab -n 200 -c 50  -d -l <a class="reference external" href="http://127.0.0.1:8888/albums/verification_suite">http://127.0.0.1:8888/albums/verification_suite</a></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="18%" />
+<col width="15%" />
+<col width="9%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Date</th>
+<th class="head">System</th>
+<th class="head">OS</th>
+<th class="head">Ram</th>
+<th class="head">Twistd Ver</th>
+<th class="head">Head</th>
+<th class="head">RPS</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>08/25/2015</td>
+<td>2.9 i5 iMac</td>
+<td>10.10.4</td>
+<td>8 Gb</td>
+<td>15.3.0</td>
+<td>afad0f1</td>
+<td>97.98 #/s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="file-transfer-benchmarks">
+<h1>File Transfer Benchmarks<a class="headerlink" href="#file-transfer-benchmarks" title="Permalink to this headline">¶</a></h1>
+<p>Measured in Requests per Second - Tested using ApacheBench v2.3 (Rev 1663405)</p>
+<p>Generated using the following Settings:</p>
+<ul class="simple">
+<li>Concurrency Level &#64; 50</li>
+<li>Using the base command line of ab -n 200 -c 50  -d -l</li>
+</ul>
+<p>The files are filled with Random Data, and randomly created, with a final file size of:</p>
+<blockquote>
+<div><ul class="simple">
+<li>1 MB</li>
+<li>2 MB</li>
+<li>5 MB</li>
+<li>10 MB</li>
+<li>30 MB</li>
+<li>50 MB</li>
+<li>100 MB</li>
+</ul>
+</div></blockquote>
+<p>To create the test verification files, use the create_test_files.py.
+The code to create the random data file is from <a class="reference external" href="http://stackoverflow.com/questions/14275975/creating-random-binary-files">http://stackoverflow.com/questions/14275975/creating-random-binary-files</a></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="9%" />
+<col width="8%" />
+<col width="5%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Date</th>
+<th class="head">System</th>
+<th class="head">OS</th>
+<th class="head">Ram</th>
+<th class="head">Twistd Ver</th>
+<th class="head">Head</th>
+<th class="head">1 MB</th>
+<th class="head">2 MB</th>
+<th class="head">5 MB</th>
+<th class="head">10 MB</th>
+<th class="head">30 MB</th>
+<th class="head">50 MB</th>
+<th class="head">100 MB</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>04/15/2015</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>15.0.0</td>
+<td>&nbsp;</td>
+<td>238.62 #/s</td>
+<td>123.47 #/s</td>
+<td>52.18 #/s</td>
+<td>29.10 #/s</td>
+<td>14.30 #/s</td>
+<td>11.03 #/s</td>
+<td>5.70 #/s</td>
+</tr>
+<tr class="row-odd"><td>06/08/2015</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>15.2.1</td>
+<td>&nbsp;</td>
+<td>246.26 #/s</td>
+<td>149.39 #/s</td>
+<td>70.23 #/s</td>
+<td>38.87 #/s</td>
+<td>14.29 #/s</td>
+<td>8.39 #/s</td>
+<td>4.29 #/s</td>
+</tr>
+<tr class="row-even"><td>07/31/2015</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>15.2.1</td>
+<td>&nbsp;</td>
+<td>294.96 #/s</td>
+<td>175.96 #/s</td>
+<td>60.26 #/s</td>
+<td>32.34 #/s</td>
+<td>13.71 #/s</td>
+<td>8.23 #/s</td>
+<td>4.61 #/s</td>
+</tr>
+<tr class="row-odd"><td>08/25/2015</td>
+<td>3.4 i5 iMac</td>
+<td>10.11.0 B6</td>
+<td>8 Gb</td>
+<td>15.2.1</td>
+<td>afad0f1</td>
+<td>256.24 #/s</td>
+<td>146.01 #/s</td>
+<td>78.45 #/s</td>
+<td>46.30 #/s</td>
+<td>15.95 #/s</td>
+<td>9.81 #/s</td>
+<td>4.80 #/s</td>
+</tr>
+<tr class="row-even"><td>08/25/2015</td>
+<td>3.4 i5 iMac</td>
+<td>10.11.0 B6</td>
+<td>8 Gb</td>
+<td>15.3.0</td>
+<td>afad0f1</td>
+<td>353.87 #/s</td>
+<td>208.66 #/s</td>
+<td>94.17 #/s</td>
+<td>46.42 #/s</td>
+<td>16.33 #/s</td>
+<td>10.08 #/s</td>
+<td>5.11 #/s</td>
+</tr>
+<tr class="row-odd"><td>08/25/2015</td>
+<td>2.9 i5 iMac</td>
+<td>10.10.4</td>
+<td>8 Gb</td>
+<td>15.3.0</td>
+<td>afad0f1</td>
+<td>296.67 #/s</td>
+<td>178.49 #/s</td>
+<td>79.75 #/s</td>
+<td>42.09 #/s</td>
+<td>14.42 #/s</td>
+<td>8.81 #/s</td>
+<td>4.42 #/s</td>
+</tr>
+</tbody>
+</table>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Benchmarks</a></li>
+<li><a class="reference internal" href="#index-page-benchmarks">Index Page Benchmarks</a></li>
+<li><a class="reference internal" href="#file-transfer-benchmarks">File Transfer Benchmarks</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gallery_plugin_api.html"
+                        title="previous chapter">Gallery Plugin API Documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../semantic/semantic_url_index.html"
+                        title="next chapter">Semantic URL</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/gallery_benchmarks.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../semantic/semantic_url_index.html" title="Semantic URL"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gallery_plugin_api.html" title="Gallery Plugin API Documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">API Documentation 1.0.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="gallery_index.html" >Table of Contents</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Benjamin Schollnick.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.
+    </div>
+  </body>
+</html>
